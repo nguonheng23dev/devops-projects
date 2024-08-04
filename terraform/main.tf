@@ -2,14 +2,16 @@ terraform {
     required_providers{
         aws = {
             source = "hashicorp/aws"
-            version = "~>4.0"
+            version = "~>4.30.0"
         }
     }
     backend "s3" {
         bucket = "ec2-myapp-terraform-state-bucket"
         key = "ec2-deploy/terraform.tfstate"
         region = "ap-southeast-2"
-    } 
+        profile = "int"
+    }
+    required_version = ">= 1.1.0 " 
 }
 
 provider "aws"{
