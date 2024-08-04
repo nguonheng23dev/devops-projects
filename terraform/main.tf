@@ -2,19 +2,19 @@ terraform {
     required_providers{
         aws = {
             source = "hashicorp/aws"
-            version = "~>4.0"
+            version = "~>4.30.0"
         }
     }
     backend "s3" {
-        bucket = "terraform-state-int"
-        key = "aws/"
-        region = aws-region
+        bucket = "ec2-myapp-terraform-state-bucket"
+        key = "ec2-deploy/terraform.tfstate"
+        region = "ap-southeast-2"
         profile = "int"
     } 
 }
 
 provider "aws"{
-    region = var.region
+    region = "ap-southeast-2"
 }
 
 resource "aws_instance" "server" {
@@ -22,7 +22,7 @@ resource "aws_instance" "server" {
     instance_type = "t2.micro"
     key_name = aws_key_pair.deployer.key_name 
     vpc_security_group_ids = [aws_security_group.maingroup.id]
-    iam_instance_profile = aws_ims_instance_profile.ec2-profile.name
+    iam_instance_profile = aws_iam_instance_profile.ec2-profile.name
     connection {
         type = "ssh"
         host = self.public_ip
@@ -34,8 +34,7 @@ resource "aws_instance" "server" {
         "name" = "DeployVM"
     }
 }
-
-resource "aws_ims_instance_profile" "ec2-profile" {
+resource "aws_iam_instance_profile" "ec2-profile" {
     name = "ec2-profile"
     role = "EC2-ECR-AUTH"
 }
@@ -80,7 +79,7 @@ resource "aws_security_group" "maingroup" {
     ]
 }
 
-resource "aws_key_api" "deployer"{
+resource "aws_key_pair" "deployer"{
     key_name = var.key_name
     public_key = var.public_key
 }
