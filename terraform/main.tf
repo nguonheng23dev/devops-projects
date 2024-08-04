@@ -9,7 +9,6 @@ terraform {
         bucket = "ec2-myapp-terraform-state-bucket"
         key = "ec2-deploy/terraform.tfstate"
         region = "ap-southeast-2"
-        encrypt = true
     } 
 }
 

@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - deploy@v2
-      
+
 env:
   AWS_ACCESS-KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
   AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -24,7 +24,7 @@ jobs:
           terraform_wrapper: false
       - name: Terraform init 
         id: init
-        run: terraform init -backend-config="bucket=$TF_STATE_BUCKET_NAME" -backend-config="region=ap-southeast-2"
+        run: terraform init -backend-config="bucket=ec2-myapp-terraform-state-bucket" -backend-config="region=ap-southeast-2"
         working-directory: ./terraform
       - name: Terraform Plan
         id: plan
