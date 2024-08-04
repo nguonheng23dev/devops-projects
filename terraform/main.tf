@@ -10,8 +10,7 @@ terraform {
         key = "ec2-deploy/terraform.tfstate"
         region = "ap-southeast-2"
         profile = "int"
-    }
-    required_version = ">= 1.1.0 " 
+    } 
 }
 
 provider "aws"{
@@ -23,7 +22,7 @@ resource "aws_instance" "server" {
     instance_type = "t2.micro"
     key_name = aws_key_pair.deployer.key_name 
     vpc_security_group_ids = [aws_security_group.maingroup.id]
-    iam_instance_profile = aws_ims_instance_profile.ec2-profile.name
+    iam_instance_profile = aws_iam_instance_profile.ec2-profile.name
     connection {
         type = "ssh"
         host = self.public_ip
@@ -36,7 +35,7 @@ resource "aws_instance" "server" {
     }
 }
 
-resource "aws_ims_instance_profile" "ec2-profile" {
+resource "aws_iam_instance_profile" "ec2-profile" {
     name = "ec2-profile"
     role = "EC2-ECR-AUTH"
 }
