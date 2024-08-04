@@ -8,8 +8,8 @@ terraform {
     backend "s3" {
         bucket = "ec2-myapp-terraform-state-bucket"
         key = "aws/ec2-deploy/terraform.tfstate"
-        region = aws-region
-        profile = "int"
+        region = "ap-southeast-2"
+        profile = "default"
     } 
 }
 
