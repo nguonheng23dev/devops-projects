@@ -7,9 +7,9 @@ terraform {
     }
     backend "s3" {
         bucket = "ec2-myapp-terraform-state-bucket"
-        key = "aws/ec2-deploy/terraform.tfstate"
+        key = "ec2-deploy/terraform.tfstate"
         region = "ap-southeast-2"
-        profile = "default"
+        encrypt = true
     } 
 }
 
