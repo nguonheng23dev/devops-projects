@@ -40,3 +40,4 @@ jobs:
         id: applu
         run: terraform apply PLAN
         working-directory: ./terraform
+        
