@@ -10,7 +10,7 @@ terraform {
     } 
 }
 
-provider "aws" {
+provider "aws"{
     region = var.region
 }
 
@@ -18,7 +18,7 @@ resource "aws_instance" "server" {
     ami = "ami-03f0544597f43a91d"
     instance_type = "t2.micro"
     key_name = aws_key_pair.deployer.key_name 
-    vpc-security_groups_ids = [aws_security_group.maingroup.id]
+    vpc_security_group_ids = [aws_security_group.maingroup.id]
     iam_instance_profile = aws_ims_instance_profile.ec2-profile.name
     connection {
         type = "ssh"
