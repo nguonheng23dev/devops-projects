@@ -6,7 +6,7 @@ terraform {
         }
     }
     backend "s3" {
-        bucket = "terraform-state-int"
+        bucket = "ec2-myapp-terraform-state-bucket"
         key = "aws/ec2-deploy/terraform.tfstate"
         region = aws-region
         profile = "int"
