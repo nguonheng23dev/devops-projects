@@ -34,7 +34,6 @@ resource "aws_instance" "server" {
         "name" = "DeployVM"
     }
 }
-
 resource "aws_iam_instance_profile" "ec2-profile" {
     name = "ec2-profile"
     role = "EC2-ECR-AUTH"
@@ -80,7 +79,7 @@ resource "aws_security_group" "maingroup" {
     ]
 }
 
-resource "aws_key_api" "deployer"{
+resource "aws_key_pair" "deployer"{
     key_name = var.key_name
     public_key = var.public_key
 }
