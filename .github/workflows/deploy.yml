@@ -24,7 +24,7 @@ jobs:
           terraform_wrapper: false
       - name: Terraform init 
         id: init
-        run: terraform init -backend-congif="bucket=F_STATE_BUCKET_NAME" -backend-config="region=ap-southeast-2"
+        run: terraform init -backend-congif="bucket=$TF_STATE_BUCKET_NAME" -backend-config="region=ap-southeast-2"
         working-directory: ./terraform
       - name: Terraform Plan
         id: Plan
@@ -37,6 +37,6 @@ jobs:
           -out=Plan
         working-directory: ./terraform
       - name: Terraform Apply
-        id: Apply
-        run: terraform apply Plan
+        id: applu
+        run: terraform apply PLAN
         working-directory: ./terraform
