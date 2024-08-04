@@ -11,6 +11,7 @@ terraform {
 }
 
 provider "aws"{
+    profile = "kalang"
     region = "ap-southeast-2"
 }
 
