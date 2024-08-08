@@ -48,7 +48,7 @@ resource "aws_security_group" "maingroup" {
             protocol = "-1"
             security_groups = []
             self = false
-            to_ports = 53
+            to_port = 53
         }
     ]
     ingress = [
@@ -61,7 +61,7 @@ resource "aws_security_group" "maingroup" {
             protocol = "tcp"
             security_groups = []
             self = false
-            to_ports = 23
+            to_port = 23
         },
         {
             cidr_blocks = ["0.0.0.0/0", ]
@@ -72,7 +72,7 @@ resource "aws_security_group" "maingroup" {
             protocol = "tcp"
             security_groups = []
             self = false
-            to_ports = 80
+            to_port = 80
         }
     ]
 }
