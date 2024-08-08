@@ -60,7 +60,7 @@ jobs:
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: devops-projects
-          IMAGE_TAG: ${{ github.nguonheng23dev }}
+          IMAGE_TAG: ${{ github.sha }}
           AWS_DEFAULT_REGION: ap-southeast-2
         run: |-
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
@@ -70,7 +70,7 @@ jobs:
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: devops-projects
-          IMAGE_TAG: ${{ github.nguonheng23dev }}
+          IMAGE_TAG: ${{ github.sha }}
           AWS_DEFAULT_REGION: ap-southeast-2
         uses: appleboy/ssh-action@master
         with: 
