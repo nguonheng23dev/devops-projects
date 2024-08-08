@@ -78,7 +78,7 @@ jobs:
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: devops-projects
-          IMAGE_TAG: ${{ github.nguonheng23dev }}
+          IMAGE_TAG: ${{ github.sha }}  # Using the commit SHA as the image tag
           AWS_DEFAULT_REGION: ap-southeast-2
         uses: appleboy/ssh-action@master
         with: 
@@ -90,11 +90,9 @@ jobs:
             sudo apt update
             sudo apt install docker.io -y
             sudo apt install awscli -y
-            sudo $(aws ecr get-login --no-include-email --region ap-southeast-2);
+            aws ecr get-login-password --region ap-southeast-2 | sudo docker login --username AWS --password-stdin $REGISTRY
             sudo docker stop myappcontainer || true
             sudo docker rm myappcontainer || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker run -d --name myappcontainer -p 80:8080
-
-
-    
+            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
+      
