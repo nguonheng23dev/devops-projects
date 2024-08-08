@@ -42,13 +42,13 @@ resource "aws_security_group" "maingroup" {
         {
             cidr_blocks = ["0.0.0.0/0"]
             description = ""
-            from_port = 0
+            from_port = 53
             ipv6_cidr_blocks = []
             prefix_list_ids = []
             protocol = "-1"
             security_groups = []
             self = false
-            to_ports = 0
+            to_ports = 53
         }
     ]
     ingress = [
@@ -61,7 +61,7 @@ resource "aws_security_group" "maingroup" {
             protocol = "tcp"
             security_groups = []
             self = false
-            to_ports = 22
+            to_ports = 23
         },
         {
             cidr_blocks = ["0.0.0.0/0", ]
