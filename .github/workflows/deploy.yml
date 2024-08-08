@@ -61,11 +61,13 @@ jobs:
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: devops-projects
-          IMAGE_TAG: ${{ github.nguonheng23dev }}
+          IMAGE_TAG: ${{ github.sha }}  # Ensure this is set correctly
+          AWS_DEFAULT_REGION: ap-southeast-2
         run: |-
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        working-directory: ./
+          echo "Docker tag: ${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"  # Debug output
+          docker build -t "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}" .
+          docker push "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
+        working-directory: ./nodeapp
       - name: Deploy docker image to EC2
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
