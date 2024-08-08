@@ -11,7 +11,6 @@ terraform {
 }
 
 provider "aws"{
-    profile = "kalang"
     region = "ap-southeast-2"
 }
 
@@ -38,43 +37,44 @@ resource "aws_iam_instance_profile" "ec2-profile" {
 }
 
 resource "aws_security_group" "maingroup" {
-    egress = [
-        {
-            cidr_blocks = ["0.0.0.0/0"]
-            description = ""
-            from_port = 0
-            ipv6_cidr_blocks = []
-            prefix_list_ids = []
-            protocol = "-1"
-            security_groups = []
-            self = false
-            to_ports = 0
-        }
-    ]
-    ingress = [
-        {
-            cidr_blocks = ["0.0.0.0/0", ]
-            description = ""
-            from_port = 22
-            ipv6_cidr_blocks = []
-            prefix_list_ids = []
-            protocol = "tcp"
-            security_groups = []
-            self = false
-            to_ports = 22
-        },
-        {
-            cidr_blocks = ["0.0.0.0/0", ]
-            description = ""
-            from_port = 80
-            ipv6_cidr_blocks = []
-            prefix_list_ids = []
-            protocol = "tcp"
-            security_groups = []
-            self = false
-            to_ports = 80
-        }
-    ]
+  egress = [
+    {
+      cidr_blocks      = ["0.0.0.0/0"]
+      description      = ""
+      from_port        = 0   // Update from_port to 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0   // Update to_port to 0
+    }
+  ]
+
+  ingress = [
+    {
+      cidr_blocks      = ["0.0.0.0/0"]
+      description      = ""
+      from_port        = 22
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 23
+    },
+    {
+      cidr_blocks      = ["0.0.0.0/0"]
+      description      = ""
+      from_port        = 80
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 80
+    }
+  ]
 }
 
 resource "aws_key_pair" "deployer"{
