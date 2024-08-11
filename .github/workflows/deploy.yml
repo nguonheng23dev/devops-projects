@@ -63,10 +63,9 @@ jobs:
           REPOSITORY: devops-projects
           IMAGE_TAG: ${{ github.sha }}
           AWS_DEFAULT_REGION: ap-southeast-2
-          PRIVATE_SSH_KEY: ${{ env.PRIVATE_SSH_KEY }}
         uses: appleboy/ssh-action@master
         with: 
-          host: ${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}  # This will now have the correct IP from the previous job
+          host: ${{ env.SERVER_PUBLIC_IP }}
           username: ubuntu
           key: ${{ env.PRIVATE_SSH_KEY }}
           envs: PRIVATE_SSH_KEY, REGISTRY, REPOSITORY, IMAGE_TAG, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, AWS_REGION
@@ -74,7 +73,7 @@ jobs:
             sudo apt update
             sudo apt install docker.io -y
             sudo apt install awscli -y
-            aws ecr get-login-password --region ap-southeast-2 | sudo docker login --username AWS --password-stdin $REGISTRY
+            sudo $(aws ecr get-login --no-include-email --region ap-southeast-2);
             sudo docker stop myappcontainer || true
             sudo docker rm myappcontainer || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
