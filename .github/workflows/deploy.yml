@@ -1,85 +1,3 @@
-# name: CI/CD with Terraform
-# on:
-#   push:
-#     branches:
-#       - deploy@v2
-      
-# env:
-#   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-#   AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#   TF_STATE_BUCKET_NAME: ${{ secrets.AWS_TF_STATE_BUCKET_NAME }}
-#   PRIVATE_SSH_KEY: ${{ secrets.AWS_SSH_KEY_PRIVATE }}
-#   PUBLIC_SSH_KEY:  ${{ secrets.AWS_SSH_KEY_PUBLIC }}
-#   AWS_REGION: ap-southeast-2
-
-# jobs:
-#   deploy-infra:
-#     runs-on: ubuntu-latest
-#     outputs: 
-#       SERVER_PUBLIC_IP: ${{ steps.set-ip.outputs.instance_public_ip }}
-#     steps:
-#       # Terraform steps remain the same
-#       - name: Set output
-#         id: set-ip
-#         run: |-
-#           echo "::set-output name=instance_public_ip::$(terraform output -raw instance_public_ip)"  # Use -raw to avoid newlines
-
-#   deploy-app:
-#     runs-on: ubuntu-latest
-#     needs: deploy-infra
-#     steps: 
-#       - name: Checkout
-#         uses: actions/checkout@v3
-
-#       - name: Set IP env variable
-#         run: echo "SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}" >> $GITHUB_ENV
-
-#       - name: Login to AWS ECR
-#         id: login-ecr
-#         uses: aws-actions/amazon-ecr-login@v1
-
-#       - name: Create ECR repository if it doesn't exist
-#         run: |
-#           aws ecr describe-repositories --repository-names "devops-projects" --region ap-southeast-2 || \
-#           aws ecr create-repository --repository-name "devops-projects" --region ap-southeast-2
-#         env:
-#           AWS_REGION: ap-southeast-2
-
-#       - name: Build, push docker image
-#         env: 
-#           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#           REPOSITORY: devops-projects
-#           IMAGE_TAG: ${{ github.sha }}
-#           AWS_DEFAULT_REGION: ap-southeast-2
-#         run: |-
-#           echo "Docker tag: ${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"  # Debug output
-#           docker build -t "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}" .
-#           docker push "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
-#         working-directory: ./nodeapp
-
-#       - name: Deploy docker image to EC2
-#         env: 
-#           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#           REPOSITORY: devops-projects
-#           IMAGE_TAG: ${{ github.sha }}
-#           AWS_DEFAULT_REGION: ap-southeast-2
-#           PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
-#         uses: appleboy/ssh-action@master
-#         with: 
-#           host: ${{ env.SERVER_PUBLIC_IP }}  # This will now have the correct IP from the previous job
-#           username: ubuntu
-#           key: ${{ env.PRIVATE_SSH_KEY }}
-#           envs: PRIVATE_SSH_KEY, REGISTRY, REPOSITORY, IMAGE_TAG, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, AWS_REGION
-#           script: |-
-#             sudo apt update
-#             sudo apt install docker.io -y
-#             sudo apt install awscli -y
-#             aws ecr get-login-password --region ap-southeast-2 | sudo docker login --username AWS --password-stdin $REGISTRY
-#             sudo docker stop myappcontainer || true
-#             sudo docker rm myappcontainer || true
-#             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-#             sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
 name: CI/CD with Terraform
 on:
   push:
@@ -87,6 +5,11 @@ on:
       - deploy@v2
       
 env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+  AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  TF_STATE_BUCKET_NAME: ${{ secrets.AWS_TF_STATE_BUCKET_NAME }}
+  PRIVATE_SSH_KEY: ${{ secrets.AWS_SSH_KEY_PRIVATE }}
+  PUBLIC_SSH_KEY:  ${{ secrets.AWS_SSH_KEY_PUBLIC }}
   AWS_REGION: ap-southeast-2
 
 jobs:
@@ -95,9 +18,10 @@ jobs:
     outputs: 
       SERVER_PUBLIC_IP: ${{ steps.set-ip.outputs.instance_public_ip }}
     steps:
+      # Terraform steps remain the same
       - name: Set output
         id: set-ip
-        run: |
+        run: |-
           echo "::set-output name=instance_public_ip::$(terraform output -raw instance_public_ip)"  # Use -raw to avoid newlines
 
   deploy-app:
@@ -116,16 +40,18 @@ jobs:
 
       - name: Create ECR repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names "devops-projects" --region ${{ env.AWS_REGION }} || \
-          aws ecr create-repository --repository-name "devops-projects" --region ${{ env.AWS_REGION }}
+          aws ecr describe-repositories --repository-names "devops-projects" --region ap-southeast-2 || \
+          aws ecr create-repository --repository-name "devops-projects" --region ap-southeast-2
+        env:
+          AWS_REGION: ap-southeast-2
 
       - name: Build, push docker image
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: devops-projects
           IMAGE_TAG: ${{ github.sha }}
-          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
-        run: |
+          AWS_DEFAULT_REGION: ap-southeast-2
+        run: |-
           echo "Docker tag: ${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"  # Debug output
           docker build -t "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}" .
           docker push "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
@@ -136,19 +62,20 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: devops-projects
           IMAGE_TAG: ${{ github.sha }}
-          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+          AWS_DEFAULT_REGION: ap-southeast-2
+          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
         uses: appleboy/ssh-action@master
         with: 
-          host: ${{ env.SERVER_PUBLIC_IP }}
+          host: ${{ env.SERVER_PUBLIC_IP }}  # This will now have the correct IP from the previous job
           username: ubuntu
-          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          key: ${{ env.PRIVATE_SSH_KEY }}
           envs: PRIVATE_SSH_KEY, REGISTRY, REPOSITORY, IMAGE_TAG, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, AWS_REGION
-          script: |
+          script: |-
             sudo apt update
             sudo apt install docker.io -y
             sudo apt install awscli -y
-            aws ecr get-login-password --region ${{ env.AWS_REGION }} | sudo docker login --username AWS --password-stdin $REGISTRY
+            aws ecr get-login-password --region ap-southeast-2 | sudo docker login --username AWS --password-stdin $REGISTRY
             sudo docker stop myappcontainer || true
             sudo docker rm myappcontainer || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG || echo "Error: Failed to deploy Docker container"
+            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
