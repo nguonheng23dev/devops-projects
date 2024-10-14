@@ -85,21 +85,17 @@ jobs:
     steps: 
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Set IP env variable
-        run: echo "SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}" >> $GITHUB_ENV
-
+        run: echo SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }} >> $GITHUB_ENV
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
       - name: Create ECR repository if it doesn't exist
         run: |
           aws ecr describe-repositories --repository-names "devops-projects" --region ap-southeast-2 || \
           aws ecr create-repository --repository-name "devops-projects" --region ap-southeast-2
         env:
           AWS_REGION: ap-southeast-2
-
       - name: Build, push docker image
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -111,7 +107,6 @@ jobs:
           docker build -t "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}" .
           docker push "${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
         working-directory: ./nodeapp
-
       - name: Deploy docker image to EC2
         env: 
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
